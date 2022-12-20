@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
@@ -23,6 +23,7 @@ const RevealSeedPage = () => {
   const [screen, setScreen] = useState(PASSWORD_PROMPT_SCREEN);
   const [password, setPassword] = useState('');
   const [seedWords, setSeedWords] = useState(null);
+  const [completedLongPress, setCompletedLongPress] = useState(false);
   const [error, setError] = useState(null);
   const mostRecentOverviewPage = useSelector(getMostRecentOverviewPage);
 
@@ -36,6 +37,7 @@ const RevealSeedPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setSeedWords(null);
+    setCompletedLongPress(false);
     setError(null);
     try {
       dispatch(requestRevealSeedWords(password)).then((revealedSeedWords) => {
@@ -47,8 +49,16 @@ const RevealSeedPage = () => {
           },
         });
         setSeedWords(revealedSeedWords);
-        setScreen(REVEAL_SEED_SCREEN);
       });
+      dispatch(
+        showModal({
+          name: 'HOLD_TO_REVEAL_SRP',
+          onLongPressed: () => {
+            setCompletedLongPress(true);
+            setScreen(REVEAL_SEED_SCREEN);
+          },
+        }),
+      );
     } catch (e) {
       trackEvent({
         category: EVENT.CATEGORIES.KEYS,
@@ -193,14 +203,13 @@ const RevealSeedPage = () => {
   };
 
   const renderContent = () => {
-    if (screen === PASSWORD_PROMPT_SCREEN) {
-      return renderPasswordPromptContent();
-    }
-    return renderRevealSeedContent();
+    return screen === PASSWORD_PROMPT_SCREEN || !completedLongPress
+      ? renderPasswordPromptContent()
+      : renderRevealSeedContent();
   };
 
   const renderFooter = () => {
-    return screen === PASSWORD_PROMPT_SCREEN
+    return screen === PASSWORD_PROMPT_SCREEN || !completedLongPress
       ? renderPasswordPromptFooter()
       : renderRevealSeedFooter();
   };
@@ -221,21 +230,5 @@ const RevealSeedPage = () => {
     </div>
   );
 };
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     requestRevealSeedWords: (password) =>
-//       dispatch(requestRevealSeedWords(password)),
-//     showLongPressWarningModal: ({ target, onConfirm }) => {
-//       return dispatch(
-//         showModal({
-//           name: '',
-//           target,
-//           onConfirm,
-//         }),
-//       );
-//     },
-//   };
-// };
 
 export default RevealSeedPage;
