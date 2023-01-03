@@ -6,10 +6,20 @@ import { requestRevealSeedWords, showModal } from '../../store/actions';
 import ExportTextContainer from '../../components/ui/export-text-container';
 import { getMostRecentOverviewPage } from '../../ducks/history/history';
 import { EVENT, EVENT_NAMES } from '../../../shared/constants/metametrics';
+import {
+  TYPOGRAPHY,
+  FONT_WEIGHT,
+  TEXT,
+  COLORS,
+} from '../../helpers/constants/design-system';
 
 import Button from '../../components/ui/button';
+import Box from '../../components/ui/box';
+import { Text, Label } from '../../components/component-library';
 import { useI18nContext } from '../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../contexts/metametrics';
+import ZENDESK_URLS from '../../helpers/constants/zendesk-url';
+import { Tabs, Tab } from '../../components/ui/tabs';
 
 const PASSWORD_PROMPT_SCREEN = 'PASSWORD_PROMPT_SCREEN';
 const REVEAL_SEED_SCREEN = 'REVEAL_SEED_SCREEN';
@@ -78,9 +88,18 @@ const RevealSeedPage = () => {
         <i className="fa fa-exclamation-triangle fa-2x page-container__warning-icon" />
         <div className="page-container__warning-message">
           <div className="page-container__warning-title">
-            {t('revealSeedWordsWarningTitle')}
+            <Text variant={TEXT.BODY_MD}>
+              {t('revealSeedWordsWarning', [
+                <Text
+                  key="reveal-seed-words-warning-2"
+                  variant={TEXT.BODY_MD_BOLD}
+                  as="inline"
+                >
+                  {t('revealSeedWordsWarning2')}
+                </Text>,
+              ])}
+            </Text>
           </div>
-          <div>{t('revealSeedWordsWarning')}</div>
         </div>
       </div>
     );
@@ -89,9 +108,9 @@ const RevealSeedPage = () => {
   const renderPasswordPromptContent = () => {
     return (
       <form onSubmit={(event) => handleSubmit(event)}>
-        <label className="input-label" htmlFor="password-box">
+        <Label htmlFor="password-box" variant={TEXT.BODY_MD_BOLD}>
           {t('enterPasswordContinue')}
-        </label>
+        </Label>
         <div className="input-group">
           <input
             data-testid="input-password"
@@ -113,9 +132,11 @@ const RevealSeedPage = () => {
   const renderRevealSeedContent = () => {
     return (
       <div>
-        <label className="reveal-seed__label">
-          {t('yourPrivateSeedPhrase')}
-        </label>
+        <Label variant={TEXT.BODY_SM_BOLD}>{t('yourPrivateSeedPhrase')}</Label>
+        <Tabs defaultActiveTabName={t('revealSeedWordsText')}>
+          <Tab name={t('revealSeedWordsText')}>hihi</Tab>
+          <Tab name={t('revealSeedWordsQR')}>bye</Tab>
+        </Tabs>
         <ExportTextContainer
           text={seedWords}
           onClickCopy={() => {
@@ -196,7 +217,9 @@ const RevealSeedPage = () => {
           className="page-container__footer-single-button"
           onClick={() => history.push(mostRecentOverviewPage)}
         >
-          {t('close')}
+          <Text variant={TEXT.BODY_MD} color={COLORS.PRIMARY_DEFAULT}>
+            {t('close')}
+          </Text>
         </Button>
       </div>
     );
@@ -216,15 +239,42 @@ const RevealSeedPage = () => {
 
   return (
     <div className="page-container">
-      <div className="page-container__header">
-        <div className="page-container__title">{t('secretRecoveryPhrase')}</div>
-        <div className="page-container__subtitle">
-          {t('revealSeedWordsDescription')}
-        </div>
-      </div>
-      <div className="page-container__content">
+      <Text variant={TEXT.HEADING_LG}>{t('secretRecoveryPhrase')}</Text>
+      <Text variant={TEXT.BODY_MD}>
+        {t('revealSeedWordsDescription1', [
+          <Button
+            key="srp-learn-more"
+            type="link"
+            href={ZENDESK_URLS.SECRET_RECOVERY_PHRASE_USER_GUIDE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="settings-page__inline-link"
+          >
+            {t('revealSeedWordsSRPName')}
+          </Button>,
+          <Text key="reveal-seed-word-part-3" variant={TEXT.BODY_MD_BOLD}>
+            {t('revealSeedWordsDescription3')}
+          </Text>,
+        ])}
+      </Text>
+      <Text variant={TEXT.BODY_MD}>
+        {t('revealSeedWordsDescription2', [
+          <Button
+            key="ledger-connection-settings-learn-more"
+            type="link"
+            href={ZENDESK_URLS.NON_CUSTODIAL_WALLET}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="settings-page__inline-link"
+          >
+            {t('revealSeedWordsNonCustodialWallet')}
+          </Button>,
+        ])}
+      </Text>
+      <Text variant={TEXT.BODY_MD}></Text>
+      <div cl assName="page-container__content">
         {renderWarning()}
-        <div className="reveal-seed__content">{renderContent()}</div>
+        <div className="reveal-seed__content"> {renderContent()}</div>
       </div>
       {renderFooter()}
     </div>
