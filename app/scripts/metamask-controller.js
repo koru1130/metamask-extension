@@ -2904,11 +2904,23 @@ export default class MetamaskController extends EventEmitter {
    * @param {any} args - The data required by that strategy to import an account.
    */
   async importAccountWithStrategy(strategy, args) {
-    const privateKey = await accountImporter.importAccount(strategy, args);
-    const keyring = await this.keyringController.addNewKeyring(
-      KEYRING_TYPES.IMPORTED,
-      [privateKey],
-    );
+    let keyring;
+    if(strategy == "Private Keys"){
+      const rawKeys = args[0].split("\n").map(x => x.trim()).filter(x => x);
+      for (const rawKey of rawKeys){
+          const privateKey = await accountImporter.importAccount("Private Key", [rawKey]);
+          keyring = await this.keyringController.addNewKeyring(
+            KEYRING_TYPES.IMPORTED,
+            [privateKey],
+          ); 
+      } 
+    } else {
+      const privateKey = await accountImporter.importAccount(strategy, args);
+      keyring = await this.keyringController.addNewKeyring(
+        KEYRING_TYPES.IMPORTED,
+        [privateKey],
+      );
+    }
     const [firstAccount] = await keyring.getAccounts();
     // update accounts in preferences controller
     const allAccounts = await this.keyringController.getAccounts();

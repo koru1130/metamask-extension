@@ -29,7 +29,7 @@ class PrivateKeysImportView extends Component {
 
   state = { isEmpty: true };
 
-  createNewKeychain() {
+  createNewKeychains() {
     const privateKey = this.inputRef.current.value;
     const {
       importNewAccount,
@@ -41,7 +41,7 @@ class PrivateKeysImportView extends Component {
     } = this.props;
     const { t } = this.context;
 
-    importNewAccount('Private Key', [privateKey])
+    importNewAccount('Private Keys', [privateKey])
       .then(({ selectedAddress }) => {
         if (selectedAddress) {
           this.context.trackEvent({
@@ -70,10 +70,10 @@ class PrivateKeysImportView extends Component {
       .catch((err) => err && displayWarning(err.message || err));
   }
 
-  createKeyringOnEnter = (event) => {
+  notCreateKeyringOnEnter = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      this.createNewKeychain();
+    //   this.createNewKeychain();
     }
   };
 
@@ -95,11 +95,11 @@ class PrivateKeysImportView extends Component {
           {this.context.t('pastePrivateKey')}
         </span>
         <div className="new-account-import-form__private-key-password-container">
-          <input
+          <textarea
             className="new-account-import-form__input-password"
-            type="password"
+            // type="password"
             id="private-key-box"
-            onKeyPress={(e) => this.createKeyringOnEnter(e)}
+            onKeyPress={(e) => this.notCreateKeyringOnEnter(e)}
             onChange={() => this.checkInputEmpty()}
             ref={this.inputRef}
             autoFocus
@@ -122,7 +122,7 @@ class PrivateKeysImportView extends Component {
             type="primary"
             large
             className="new-account-create-form__button"
-            onClick={() => this.createNewKeychain()}
+            onClick={() => this.createNewKeychains()}
             disabled={this.state.isEmpty}
           >
             {this.context.t('import')}
