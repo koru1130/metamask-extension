@@ -24,6 +24,15 @@
         "chromeos": "Alt+Shift+M",
         "linux": "Alt+Shift+M"
       }
+    },
+    "next_account": {
+      "suggested_key": {
+        "windows": "Alt+1",
+        "mac": "Alt+1",
+        "chromeos": "Alt+1",
+        "linux": "Alt+1"
+      },
+      "description": "Switch to the next account."
     }
   },
   "content_scripts": [

@@ -749,6 +749,7 @@ function setupController(initState, initLangCode) {
 
     updateBadge();
   }
+
 }
 
 //
@@ -840,3 +841,17 @@ function setupSentryGetStateGlobal(store) {
     };
   };
 }
+
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === 'next_account' && controller) {
+    const accounts = await controller.keyringController.getAccounts();
+    const currentAccount = controller.preferencesController.getSelectedAddress();
+    
+    const currentAccountIndex = accounts.indexOf(currentAccount);
+    const nextAccount = accounts[currentAccountIndex + 1]
+
+    controller.preferencesController.setSelectedAddress(nextAccount)
+
+  }
+  
+}); 
